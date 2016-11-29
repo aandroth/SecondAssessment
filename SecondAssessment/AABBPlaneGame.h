@@ -300,45 +300,37 @@ void AABBPlaneGame::drawReflectionLines()
 	}
 	float pPmax = dot(m_static_plane.m_direction, m_static_plane.m_position);
 
-	// Find the reflection vector of the velocity off of the Plane
-	Vec2 reflectVec = reflection(m_static_plane.m_direction, m_aabb.m_vel);
-
-	float dotTotal = aMin - vMin;
-	float dotToPlane = (aMin - pPmax);
-	float dotOffOfPlane = (dotTotal - dotToPlane);
-
-	float ratioToPlane = dotToPlane / dotTotal;
-	float ratioOffOfPlane = dotOffOfPlane / dotTotal;
-
-	// Find the distance to the Plane
-	float distToPlane = magnitude(m_aabb.m_vel) * ratioToPlane;
-
-	// Find the remainder of the reflected velocity
-	float distOffOfPlane = magnitude(m_aabb.m_vel) * ratioOffOfPlane;
-
-	// Multiply the normalized velocity vector by the distance to the Plane
-	Vec2 vecToPlane = normal(m_aabb.m_vel) * distToPlane;
-
-	// Multiply the normalized reflection vector by the remainder of the velocity vector and the distance to the Plane
-	Vec2 vecOffOfPlane = normal(reflectVec) * distOffOfPlane;
-
-
-	//// Find the lines of the velocity and the plane
-	//Vec2 velLine = slopeAndConstOfVectorAndVelocity(vertArr[iMin], m_aabb.m_vel),
-	//	planeLine = slopeAndConstOfVectorAndVelocity(m_static_plane.m_position - m_static_plane.m_he, m_static_plane.m_position + m_static_plane.m_he);
-
-	//// Find the collision point of the velocity and the plane
-	//Vec2 collPoint = pointOfCollisionBetweenLines(velLine, planeLine);
-
-	//// Find the magnitude of the velocity to the collision point
-	//float magOfAabbToCollPoint = magnitude(vertArr[iMin], collPoint);
-
-	//// Find the magnitude of the collision point to the end of the velocity
-	//float magOfCollPointToEnd = magnitude(m_aabb, );
-	
 
 	if (velIsColliding)
 	{
+		// Find the reflection vector of the velocity off of the Plane
+		Vec2 reflectVec = reflection(m_static_plane.m_direction, m_aabb.m_vel);
+
+		// Find the lines of the velocity and the plane
+		Vec2 velLine = slopeAndConstOfVectorAndVelocity(vertArr[iMin], m_aabb.m_vel),
+			planeLine = slopeAndConstOfVectorAndVelocity(m_static_plane.m_position, m_static_plane.m_he);
+
+		// Find the collision point of the velocity and the plane
+		Vec2 collPoint = pointOfCollisionBetweenLines(velLine, planeLine);
+
+		// Find the magnitude of the velocity to the collision point
+		float magOfAabbToCollPoint = magnitude(collPoint - vertArr[iMin]);
+
+		// Find the magnitude of the collision point to the end of the velocity
+		float magOfCollPointToEnd = magnitude(m_aabb.m_vel) - magOfAabbToCollPoint;
+
+		// Multiply the normalized velocity vector by the distance to the Plane
+		Vec2 vecToPlane = normal(m_aabb.m_vel) * magOfAabbToCollPoint;
+
+		// Multiply the normalized reflection vector by the remainder of the velocity vector and the distance to the Plane
+		Vec2 vecOffOfPlane = normal(reflectVec) * magOfCollPointToEnd;
+
+		cout << velLine.x << ", " << velLine.y << "\n";
+		cout << planeLine.x << ", " << planeLine.y << "\n";
+		cout << collPoint.x << ", " << collPoint.y << "\n\n";
+
+		//sfw::drawCircle(collPoint.x, collPoint.y, 10, 16, BLUE);
+
 		sfw::drawLine(m_aabb.m_pos.x, m_aabb.m_pos.y,
 			m_aabb.m_pos.x + vecToPlane.x,
 			m_aabb.m_pos.y + vecToPlane.y, RED);

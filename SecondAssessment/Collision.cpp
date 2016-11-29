@@ -365,15 +365,15 @@ Vec2 slopeAndConstOfVectorAndVelocity(Vec2 vec, Vec2 vel)
 
 	Vec2 diff = vel - vec;
 
-	if (diff.y - diff.x == 0)
+	if (vel.x == 0)
 	{
 		retVal.x = 0;
 	}
 	else
 	{
-		retVal.x = diff.y / diff.x;
+		retVal.x = vel.y / vel.x;
 	}
-	retVal.y = vel.y - retVal.x * vel.x;
+	retVal.y = vec.y - retVal.x * vec.x;
 
 	return retVal;
 }
@@ -382,15 +382,16 @@ Vec2 pointOfCollisionBetweenLines(Vec2 vec0, Vec2 vec1)
 {
 	Vec2 retVal;
 
-	if (vec0.y - vec1.y == 0)
+	// Check the difference between the slopes
+	if (vec0.x - vec1.x == 0)
 	{
 		retVal.x = 0;
 	}
 	else
 	{
-		retVal.x = (vec1.x - vec0.x) / (2 * (vec0.y - vec1.y));
+		retVal.x = (vec1.y - vec0.y) / (vec0.x - vec1.x);
 	}
-	retVal.y = (vec0.y * retVal.x) + vec0.y;
+	retVal.y = (vec0.x * retVal.x) + vec0.y;
 
 	return retVal;
 }
