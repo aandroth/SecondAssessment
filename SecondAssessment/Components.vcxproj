@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{32261B59-3DCA-4369-B133-87AD22F1DA5E}</ProjectGuid>
+    <ProjectGuid>{0569EF8A-A7B8-41DD-A7EF-6519D7D93F81}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>SecondAssessment</RootNamespace>
+    <RootNamespace>Components</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -89,12 +89,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\aaron.andrews\Documents\Visual Studio 2015\Projects\SecondAssessment\Lib;C:\Users\aaron.andrews\Documents\Visual Studio 2015\Projects\SecondAssessment\SecondAssessment\Math_Library;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>sfw_d.lib;$(SolutionDir)\Math_Library</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\aaron.andrews\Documents\Visual Studio 2015\Projects\SecondAssessment\Lib;C:\Users\aaron.andrews\Documents\Visual Studio 2015\Projects\SecondAssessment\SecondAssessment\Math_Library;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Aquin\Source\Repos\Math_Library\MathTest;C:\Users\aaron.andrews\Documents\Visual Studio 2015\Projects\Math_Library\MathTest;$(SolutionDir)$(Configuration)\;C:\Users\aaron.andrews\Documents\Visual Studio 2015\Projects\Math_Library\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Math_Library.lib;sfw_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -106,10 +106,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Users\aaron.andrews\Source\Repos\Math_Library\Math_Library;C:\Users\Aquin\Source\Repos\Math_Library\Math_Library;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Users\aaron.andrews\Source\Repos\Math_Library\Math_Library;C:\Users\Aquin\Documents\Visual Studio 2015\Backup Files\Math_Library;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -122,12 +124,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Math_Library</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>Math_Library.lib;sfw.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -149,53 +153,36 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="AABBGame.h" />
-    <ClInclude Include="AABBPlaneGame.h" />
-    <ClInclude Include="ApplicationEndPage.h" />
-    <ClInclude Include="Button.h" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Collider.cpp" />
+    <ClCompile Include="Collision.cpp" />
+    <ClCompile Include="HullMode.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="PlanetRenderer.cpp" />
+    <ClCompile Include="PlanetMotor.cpp" />
+    <ClCompile Include="PlayerTransform.cpp" />
+    <ClCompile Include="RigidBody.cpp" />
+    <ClCompile Include="ShapeDraw.cpp" />
+    <ClCompile Include="Shapes.cpp" />
+    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="SpaceshipLocomotion.cpp" />
+    <ClCompile Include="SpaceshipRenderer.cpp" />
+    <ClCompile Include="Transform.cpp" />
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="Collision.h" />
-    <ClInclude Include="Math_Library\Flops.h" />
-    <ClInclude Include="Math_Library\Mat2.h" />
-    <ClInclude Include="Math_Library\Mat3.h" />
-    <ClInclude Include="Math_Library\Test.h" />
-    <ClInclude Include="Math_Library\Vec2.h" />
-    <ClInclude Include="Math_Library\Vec3.h" />
-    <ClInclude Include="Menu.h" />
-    <ClInclude Include="NGonGame.h" />
-    <ClInclude Include="PlanetMotor.h" />
+    <ClInclude Include="HullMode.h" />
     <ClInclude Include="PlanetRenderer.h" />
+    <ClInclude Include="PlanetMotor.h" />
     <ClInclude Include="PlayerTransform.h" />
     <ClInclude Include="RigidBody.h" />
-    <ClInclude Include="sfwdraw.h" />
     <ClInclude Include="ShapeDraw.h" />
     <ClInclude Include="Shapes.h" />
     <ClInclude Include="SpaceshipLocomotion.h" />
     <ClInclude Include="SpaceShipRenderer.h" />
-    <ClInclude Include="SplashPage.h" />
-    <ClInclude Include="States.h" />
     <ClInclude Include="Transform.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Collider.cpp" />
-    <ClCompile Include="Collision.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Math_Library\Mat2.cpp" />
-    <ClCompile Include="Math_Library\Mat3.cpp" />
-    <ClCompile Include="Math_Library\Test.cpp" />
-    <ClCompile Include="Math_Library\Vec2.cpp" />
-    <ClCompile Include="Math_Library\Vec3.cpp" />
-    <ClCompile Include="PlanetMotor.cpp" />
-    <ClCompile Include="PlanetRenderer.cpp" />
-    <ClCompile Include="RigidBody.cpp" />
-    <ClCompile Include="ShapeDraw.cpp" />
-    <ClCompile Include="Shapes.cpp" />
-    <ClCompile Include="SpaceshipController.cpp" />
-    <ClCompile Include="SpaceshipLocomotion.cpp" />
-    <ClCompile Include="SpaceshipRenderer.cpp" />
-    <ClCompile Include="Transform.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
