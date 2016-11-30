@@ -5,6 +5,7 @@
 
 struct Circle 
 {
+	Circle();
 	Circle(Vec2 new_pos, float new_radius);
 	Circle(Circle &circle);
 

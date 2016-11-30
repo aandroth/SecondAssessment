@@ -7,7 +7,7 @@
 
 class Menu
 {
-	Button aabbPlaneButton, aabbButton, nGonButton, exitButton;
+	Button lazersButton, aabbPlaneButton, aabbButton, nGonButton, exitButton;
 	MENU_STATE state = STAY;
 	int splashFont;
 	float currentTime;
@@ -65,14 +65,13 @@ void Menu::buttonPressed_Exit()
 void Menu::init()
 {
 	state = STAY;
-
-	// AABB-Plane Button
-	aabbPlaneButton.mouseDepressedOverButton = false;
-	aabbPlaneButton.m_pos = Vec2(450, 775);
-	aabbPlaneButton.m_dim = Vec2(100, 50);
-	aabbPlaneButton.m_text = "EXIT";
-	aabbPlaneButton.m_texture = sfw::loadTextureMap("./Images/AABB_Plane_Button.png");
-	//nGonButton.m_font = sfw::loadTextureMap("./res/tonc_font.png", 16, 6);
+	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+	// LAZERZ Button
+	lazersButton.mouseDepressedOverButton = false;
+	lazersButton.m_pos = Vec2(450, 875);
+	lazersButton.m_dim = Vec2(100, 50);
+	lazersButton.m_text = "EXIT";
+	lazersButton.m_texture = sfw::loadTextureMap("./Images/LAZERZ_Button.png");
 
 	// AABB-Plane Button
 	aabbPlaneButton.mouseDepressedOverButton = false;
@@ -116,6 +115,7 @@ void Menu::play()
 
 void Menu::draw()
 {
+	lazersButton.draw();
 	aabbPlaneButton.draw();
 	aabbButton.draw();
 	nGonButton.draw();
@@ -131,6 +131,11 @@ void Menu::step()
 	}
 	exitButton.mouseDown();
 
+	if (lazersButton.mouseUp())
+	{
+		state = PLAY_LAZERZ;
+	}
+	lazersButton.mouseDown();
 
 	if (aabbPlaneButton.mouseUp())
 	{

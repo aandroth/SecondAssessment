@@ -3,6 +3,12 @@
 #include <iostream>
 using std::cout;
 
+Circle::Circle()
+{
+	m_radius = 10;
+	m_pos = Vec2(500, 500);
+}
+
 Circle::Circle(Circle &circle)
 {
 	m_radius = circle.m_radius;

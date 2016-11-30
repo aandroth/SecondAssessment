@@ -156,6 +156,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="Collision.h" />
+    <ClInclude Include="LAZERZCANNON.h" />
     <ClInclude Include="LAZERZMENU.h" />
     <ClInclude Include="LAZERZLEVEL.h" />
     <ClInclude Include="LAZERZMAIN.h" />
