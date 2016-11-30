@@ -67,4 +67,4 @@ Vec2 maxAndMinIndices(const Hull &Hull, const Vec2 velocity);
 
 Vec2 slopeAndConstOfVectorAndVelocity(Vec2 vec, Vec2 vel);
 
-Vec2 pointOfCollisionBetweenLines(Vec2 vec0, Vec2 vec1);
+Vec2 pointOfCollisionBetweenLines(Vec2 vec0, Vec2 vec1, float xPosInCaseOfUndefinedSlope);

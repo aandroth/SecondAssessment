@@ -18,7 +18,6 @@ class Menu
 	unsigned mouse = sfw::loadTextureMap("./Images/PLAY_Button.png", 10, 10);
 
 	void buttonPressed_Credits();
-	void buttonPressed_LAZERZ();
 	void buttonPressed_AABB_PLANE();
 	void buttonPressed_AABB();
 	void buttonPressed_NGON();
@@ -35,11 +34,6 @@ public:
 void Menu::buttonPressed_Credits()
 {
 	state = CREDITS;
-}
-
-void Menu::buttonPressed_LAZERZ()
-{
-	state = PLAY_LAZERZ;
 }
 
 void Menu::buttonPressed_AABB_PLANE()
@@ -65,14 +59,6 @@ void Menu::buttonPressed_Exit()
 void Menu::init()
 {
 	state = STAY;
-
-	// AABB-Plane Button
-	aabbPlaneButton.mouseDepressedOverButton = false;
-	aabbPlaneButton.m_pos = Vec2(450, 775);
-	aabbPlaneButton.m_dim = Vec2(100, 50);
-	aabbPlaneButton.m_text = "EXIT";
-	aabbPlaneButton.m_texture = sfw::loadTextureMap("./Images/AABB_Plane_Button.png");
-	//nGonButton.m_font = sfw::loadTextureMap("./res/tonc_font.png", 16, 6);
 
 	// AABB-Plane Button
 	aabbPlaneButton.mouseDepressedOverButton = false;

@@ -19,6 +19,9 @@
     <Filter Include="Source Files\Components">
       <UniqueIdentifier>{d837a1ac-9a4c-435a-a439-efe66158ab77}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\LAZERZGAME">
+      <UniqueIdentifier>{77facb8a-1db7-4539-b130-cf0f55b9aeb8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AABBPlaneGame.h">
@@ -101,6 +104,15 @@
     </ClInclude>
     <ClInclude Include="Math_Library\Vec3.h">
       <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="LAZERZMAIN.h">
+      <Filter>Header Files\LAZERZGAME</Filter>
+    </ClInclude>
+    <ClInclude Include="LAZERZLEVEL.h">
+      <Filter>Header Files\LAZERZGAME</Filter>
+    </ClInclude>
+    <ClInclude Include="LAZERZMENU.h">
+      <Filter>Header Files\LAZERZGAME</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

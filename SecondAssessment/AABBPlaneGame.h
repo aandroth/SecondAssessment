@@ -109,13 +109,14 @@ void AABBPlaneGame::draw()
 		sfw::drawTexture(IJKL, 800, 900, 200, 100);
 		sfw::drawTexture(m_velCollIndicator, 800, 800, 200, 50);
 		drawCollisionLines();
+		if(!aabbIsColliding)
+			drawReflectionLines();
 	}
 
 	backButton.draw();
 	usingVelButton.draw();
 	sfw::drawTexture(exit_button, sfw::getMouseX(), sfw::getMouseY(), 10, 10);
 	drawOutputTextForAABBPlane();
-	drawReflectionLines();
 }
 
 void AABBPlaneGame::step()
@@ -185,11 +186,11 @@ void AABBPlaneGame::step()
 	// AABB Velocity Controls
 	if (sfw::getKey('Q'))
 	{
-		rotatePlaneLine(10);
+		rotatePlaneLine(1);
 	}
 	else if (sfw::getKey('E'))
 	{
-		rotatePlaneLine(-10);
+		rotatePlaneLine(-1);
 	}
 }
 
@@ -311,7 +312,7 @@ void AABBPlaneGame::drawReflectionLines()
 			planeLine = slopeAndConstOfVectorAndVelocity(m_static_plane.m_position, m_static_plane.m_he);
 
 		// Find the collision point of the velocity and the plane
-		Vec2 collPoint = pointOfCollisionBetweenLines(velLine, planeLine);
+		Vec2 collPoint = pointOfCollisionBetweenLines(velLine, planeLine, vertArr[iMin].x);
 
 		// Find the magnitude of the velocity to the collision point
 		float magOfAabbToCollPoint = magnitude(collPoint - vertArr[iMin]);
@@ -329,7 +330,7 @@ void AABBPlaneGame::drawReflectionLines()
 		cout << planeLine.x << ", " << planeLine.y << "\n";
 		cout << collPoint.x << ", " << collPoint.y << "\n\n";
 
-		//sfw::drawCircle(collPoint.x, collPoint.y, 10, 16, BLUE);
+		sfw::drawCircle(collPoint.x, collPoint.y, 10, 16, BLUE);
 
 		sfw::drawLine(m_aabb.m_pos.x, m_aabb.m_pos.y,
 			m_aabb.m_pos.x + vecToPlane.x,
@@ -337,7 +338,10 @@ void AABBPlaneGame::drawReflectionLines()
 
 		sfw::drawLine(m_aabb.m_pos.x + vecToPlane.x, m_aabb.m_pos.y + vecToPlane.y,
 			m_aabb.m_pos.x + vecToPlane.x + vecOffOfPlane.x,
-			m_aabb.m_pos.y + vecToPlane.y + vecOffOfPlane.y, RED);
+			m_aabb.m_pos.y + vecToPlane.y + vecOffOfPlane.y, BLUE);
+
+		drawAABB(AABB(m_aabb.m_pos.x + vecToPlane.x + vecOffOfPlane.x,
+			m_aabb.m_pos.y + vecToPlane.y + vecOffOfPlane.y, m_aabb.m_he.x, m_aabb.m_he.y), BLUE);
 	}
 	else
 	{
