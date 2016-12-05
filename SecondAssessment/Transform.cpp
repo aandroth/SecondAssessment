@@ -79,10 +79,9 @@ void Transform::debugDraw(const Mat3 &T)
 
 	//if (m_parent == nullptr)
 	{
-		//sfw::drawLine(pos.x, pos.y, right.x, right.y, GREEN);
+		sfw::drawLine(pos.x, pos.y, right.x, right.y, GREEN);
 
 		//drawCircle(L * Circle(Vec2(0, 0), m_facing));
 		sfw::drawCircle(pos.x, pos.y, 12, 12, GREEN);
-		drawPlane(L * Plane(0, 0, 500, 0));
 	}
 }

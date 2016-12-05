@@ -12,7 +12,6 @@ float CollisionData1D::MTV() const
 	return m_penetrationDepth * m_collisionNormal;
 }
 
-
 CollisionData1D collisionDetection1D(float Amin, float Amax, 
 									 float Bmin, float Bmax)
 {
@@ -22,8 +21,7 @@ CollisionData1D collisionDetection1D(float Amin, float Amax,
 		  tr = Amax - Bmin;
 
 	collisionDataDetection.m_penetrationDepth = fmin(tl, tr);
-
-	collisionDataDetection.m_collisionNormal = copysignf(1, tl - tr);
+	collisionDataDetection.m_collisionNormal  = copysignf(1, tl - tr);
 
 	return collisionDataDetection;
 }
@@ -48,7 +46,6 @@ CollisionDataSwept1D collisionDetectionSwept1D(float Amin, float Amax,
 		collisionDataDetectionSwept.m_entryTime = 0;
 		collisionDataDetectionSwept.m_exitTime = INFINITY;
 	}
-
 	collisionDataDetectionSwept.m_collisionNormal = copysignf(1, tl - tr);
 
 	return collisionDataDetectionSwept;

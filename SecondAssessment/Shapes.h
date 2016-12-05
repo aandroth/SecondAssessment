@@ -42,11 +42,14 @@ Plane operator*(const Mat3 &MAT3, const Plane &PLANE);
 
 struct Box
 {
+	Vec2 pointsArr[4];
+	Vec2 m_pos;
+
+	Box();
 	Box(float centerPos_x, float centerPos_y, float width, float height);
 	Box(Vec2 pos0, Vec2 pos1, Vec2 pos2, Vec2 pos3);
 	Box(const Box &Box);
-
-	Vec2 pointsArr[4];
+	void moveBoxToPoint(Vec2 newPos);
 };
 
 Box operator*(const Mat3 &MAT3, const Box &Box);

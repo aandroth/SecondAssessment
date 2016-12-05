@@ -14,6 +14,13 @@ Vec3::Vec3(float newX, float newY, float newZ)
 	z = newZ;
 }
 
+Vec3::Vec3(Vec2 newXY, float newZ)
+{
+	x = newXY.x;
+	y = newXY.y;
+	z = newZ;
+}
+
 Vec2 Vec3::xy()
 {
 	return Vec2(x, y);

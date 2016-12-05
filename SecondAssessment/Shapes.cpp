@@ -132,9 +132,14 @@ Plane operator*(const Mat3 &MAT3, const Plane &PLANE)
 
 	retVal.m_position  = (MAT3 * Vec3(PLANE.m_position.x,  PLANE.m_position.y, 1)).xy();
 
-	retVal.m_direction = normal((MAT3 * Vec3(PLANE.m_direction.x, PLANE.m_direction.y, 0)).xy());
+	retVal.m_direction = normal((MAT3 * Vec3(PLANE.m_direction.x, PLANE.m_direction.y, 1)).xy());
 
 	return retVal;
+}
+
+Box::Box()
+{
+	m_pos = Vec2(0, 0);
 }
 
 Box::Box(float centerPos_x, float centerPos_y, float width, float height)
@@ -160,6 +165,17 @@ Box::Box(Vec2 pos0, Vec2 pos1, Vec2 pos2, Vec2 pos3)
 	pointsArr[2] = pos2;
 	pointsArr[3] = pos3;
 }
+
+void Box::moveBoxToPoint(Vec2 newPos)
+{
+	Vec2 moveDiff = newPos - m_pos;
+
+	for (int ii = 0; ii < 4; ++ii)
+		pointsArr[ii] += moveDiff;
+
+	m_pos = newPos;
+}
+
 
 Box operator*(const Mat3 &MAT3, const Box &BOX)
 {

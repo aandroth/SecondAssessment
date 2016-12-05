@@ -89,12 +89,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\aaron.andrews\Documents\Visual Studio 2015\Projects\SecondAssessment\Lib;C:\Users\aaron.andrews\Documents\Visual Studio 2015\Projects\SecondAssessment\SecondAssessment\Math_Library;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Aquin\Source\Repos\SecondAssessment2\SecondAssessment\Math_Library;C:\Users\Aquin\Source\Repos\SecondAssessment2\Lib;C:\Users\aaron.andrews\Documents\Visual Studio 2015\Projects\SecondAssessment\Lib;C:\Users\aaron.andrews\Documents\Visual Studio 2015\Projects\SecondAssessment\SecondAssessment\Math_Library;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Users\aaron.andrews\Documents\Visual Studio 2015\Projects\SecondAssessment\Lib;C:\Users\aaron.andrews\Documents\Visual Studio 2015\Projects\SecondAssessment\SecondAssessment\Math_Library;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Aquin\Source\Repos\SecondAssessment2\SecondAssessment\Math_Library;C:\Users\Aquin\Source\Repos\SecondAssessment2\Lib;C:\Users\aaron.andrews\Documents\Visual Studio 2015\Projects\SecondAssessment\Lib;C:\Users\aaron.andrews\Documents\Visual Studio 2015\Projects\SecondAssessment\SecondAssessment\Math_Library;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>Math_Library.lib;sfw_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

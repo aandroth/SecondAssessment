@@ -16,6 +16,7 @@ union Vec3
 	};
 	Vec3();
 	Vec3(float, float, float);
+	Vec3(Vec2, float);
 
 	float operator[](unsigned idx) const;
 	float &operator[](unsigned idx);
