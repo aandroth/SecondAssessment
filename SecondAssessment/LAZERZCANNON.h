@@ -123,7 +123,6 @@ void LAZERZCANNON::draw()
 
 	Vec2 lazerzEnd(2000, 0);
 	lazerzEnd = (m_cannon_barrel_transform.getGlobalTransform() * Vec3(lazerzEnd, 1)).xy();
-	sfw::drawLine(m_head.m_pos.x, m_head.m_pos.y, lazerzEnd.x, lazerzEnd.y, YELLOW);
 }
 
 void LAZERZCANNON::step()
@@ -138,11 +137,11 @@ void LAZERZCANNON::step()
 	// AABB Controls
 	if (sfw::getKey('A'))
 	{
-		m_cannon_pivot_transform.rotateLocalTransform(1);
+		m_cannon_pivot_transform.rotateLocalTransform(0.5);
 	}
 	else if (sfw::getKey('D'))
 	{
-		m_cannon_pivot_transform.rotateLocalTransform(-1);
+		m_cannon_pivot_transform.rotateLocalTransform(-0.5);
 	}
 }
 

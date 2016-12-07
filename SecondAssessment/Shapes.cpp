@@ -80,10 +80,10 @@ AABB operator*(const Mat3 &MAT3, const AABB &aabb)
 
 	Vec3 vecArr[4];
 
-	vecArr[0] = MAT3 * Vec3(aabb.m_pos.x - aabb.m_he.x, aabb.m_pos.y - aabb.m_he.y, 1); // br
-	vecArr[1] = MAT3 * Vec3(aabb.m_pos.x - aabb.m_he.x, aabb.m_pos.y + aabb.m_he.y, 1); // tr
-	vecArr[2] = MAT3 * Vec3(aabb.m_pos.x + aabb.m_he.x, aabb.m_pos.y + aabb.m_he.y, 1); // tl
-	vecArr[3] = MAT3 * Vec3(aabb.m_pos.x + aabb.m_he.x, aabb.m_pos.y - aabb.m_he.y, 1); // bl
+	vecArr[0] = MAT3 * Vec3(aabb.m_pos.x + aabb.m_he.x, aabb.m_pos.y - aabb.m_he.y, 1); // br
+	vecArr[1] = MAT3 * Vec3(aabb.m_pos.x + aabb.m_he.x, aabb.m_pos.y + aabb.m_he.y, 1); // tr
+	vecArr[2] = MAT3 * Vec3(aabb.m_pos.x - aabb.m_he.x, aabb.m_pos.y + aabb.m_he.y, 1); // tl
+	vecArr[3] = MAT3 * Vec3(aabb.m_pos.x - aabb.m_he.x, aabb.m_pos.y - aabb.m_he.y, 1); // bl
 
 	for (int ii = 0; ii < 4; ++ii)
 	{
@@ -144,10 +144,10 @@ Box::Box()
 
 Box::Box(float centerPos_x, float centerPos_y, float width, float height)
 {
-	pointsArr[0] = Vec2(centerPos_x + (width * 0.5), centerPos_y - (height * 0.5)); // br
-	pointsArr[1] = Vec2(centerPos_x + (width * 0.5), centerPos_y + (height * 0.5)); // tr
-	pointsArr[2] = Vec2(centerPos_x - (width * 0.5), centerPos_y + (height * 0.5)); // tl
-	pointsArr[3] = Vec2(centerPos_x - (width * 0.5), centerPos_y - (height * 0.5)); // bl
+	pointsArr[0] = Vec2(centerPos_x - (width * 0.5), centerPos_y + (height * 0.5)); // tl
+	pointsArr[1] = Vec2(centerPos_x - (width * 0.5), centerPos_y - (height * 0.5)); // bl
+	pointsArr[2] = Vec2(centerPos_x + (width * 0.5), centerPos_y - (height * 0.5)); // br
+	pointsArr[3] = Vec2(centerPos_x + (width * 0.5), centerPos_y + (height * 0.5)); // tr
 }
 
 Box::Box(const Box &Box)

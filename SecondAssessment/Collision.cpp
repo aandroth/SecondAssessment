@@ -375,7 +375,7 @@ Vec2 slopeAndConstOfVectorAndVelocity(Vec2 vec, Vec2 vel)
 	return retVal;
 }
 
-Vec2 pointOfCollisionBetweenLines(Vec2 vec0, Vec2 vec1, float xPosInCaseOfUndefinedSlope)
+Vec2 pointOfCollisionBetweenLines(Vec2 vec0, Vec2 vec1, float xPosInCaseOfUndefinedSlope, float xPosOfOtherLineInCaseItMoves)
 {
 	Vec2 retVal;
 
@@ -384,6 +384,11 @@ Vec2 pointOfCollisionBetweenLines(Vec2 vec0, Vec2 vec1, float xPosInCaseOfUndefi
 	{
 		retVal.x = xPosInCaseOfUndefinedSlope;
 		retVal.y = (vec1.x * retVal.x) + vec1.y;
+	}
+	else if (vec1.x == -INFINITY)
+	{
+		retVal.x = xPosOfOtherLineInCaseItMoves;
+		retVal.y = (vec0.x * retVal.x) + vec0.y;
 	}
 	else
 	{
