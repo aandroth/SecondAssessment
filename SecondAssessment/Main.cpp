@@ -57,7 +57,7 @@ int main()
 			menu.draw();
 			if (menu.next() == STAY) {}
 			else if (menu.next() == EXIT_MENU) { state = EXIT; }
-			//else if (menu.next() == PLAY_LAZERZ) { state = ENTER_LAZERZ_GAMEPLAY; }
+			else if (menu.next() == PLAY_LAZERZ) { state = ENTER_LAZERZ_GAMEPLAY; }
 			else if (menu.next() == PLAY_AABB_PLANE) { state = ENTER_AABB_PLANE_GAMEPLAY; }
 			else if (menu.next() == PLAY_AABB) { state = ENTER_AABB_GAMEPLAY; }
 			else if (menu.next() == PLAY_NGON) { state = ENTER_NGON_GAMEPLAY; }
@@ -77,18 +77,17 @@ int main()
 			splash.draw();
 			state = splash.next(state);
 			break;*/
-		//case ENTER_LAZERZ_GAMEPLAY:
-		//	//ngon_game_ptr = new NGonGame;
-		//	lazerz_level_ptr = new LAZERZLEVEL;
-		//	lazerz_level_ptr->init();
-		//	state = LAZERZ_GAMEPLAY;
-		//	break;
-		//case LAZERZ_GAMEPLAY:
-		//	lazerz_level_ptr->step();
-		//	lazerz_level_ptr->draw();
-		//	//if (lazerz_level_ptr->next() == STAY) {}
-		//	//else { state = MENU; delete aabb_plane_game_ptr; aabb_plane_game_ptr = nullptr; menu.init(); }
-		//	break;
+		case ENTER_LAZERZ_GAMEPLAY:
+			lazerz_level_ptr = new LAZERZLEVEL;
+			lazerz_level_ptr->init();
+			state = LAZERZ_GAMEPLAY;
+			break;
+		case LAZERZ_GAMEPLAY:
+			lazerz_level_ptr->step();
+			lazerz_level_ptr->draw();
+			//if (lazerz_level_ptr->next() == STAY) {}
+			//else { state = MENU; delete aabb_plane_game_ptr; aabb_plane_game_ptr = nullptr; menu.init(); }
+			break;
 		case ENTER_AABB_PLANE_GAMEPLAY:
 			//ngon_game_ptr = new NGonGame;
 			aabb_plane_game_ptr = new AABBPlaneGame;

@@ -72,7 +72,6 @@ int main()
 			state = splash.next(state);
 			break;*/
 		case ENTER_AABB_PLANE_GAMEPLAY:
-			//ngon_game_ptr = new NGonGame;
 			aabb_plane_game_ptr = new AABBPlaneGame;
 			aabb_plane_game_ptr->init();
 			state = AABB_PLANE_GAMEPLAY;

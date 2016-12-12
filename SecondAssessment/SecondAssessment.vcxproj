@@ -171,6 +171,7 @@
     <ClInclude Include="PlanetMotor.h" />
     <ClInclude Include="PlanetRenderer.h" />
     <ClInclude Include="PlayerTransform.h" />
+    <ClInclude Include="ReflectionFns.h" />
     <ClInclude Include="RigidBody.h" />
     <ClInclude Include="sfwdraw.h" />
     <ClInclude Include="ShapeDraw.h" />

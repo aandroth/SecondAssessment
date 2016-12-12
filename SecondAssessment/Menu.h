@@ -12,7 +12,6 @@ class Menu
 	int splashFont;
 	float currentTime;
 
-	//unsigned credits_button = sfw::loadTextureMap("./Images/CREDITS_Button.png");
 	unsigned play_button = sfw::loadTextureMap("./Images/PLAY_Button.png");
 	unsigned exit_button = sfw::loadTextureMap("./Images/EXIT_Button.png");
 	unsigned mouse = sfw::loadTextureMap("./Images/PLAY_Button.png", 10, 10);
@@ -67,11 +66,11 @@ void Menu::init()
 	state = STAY;
 	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
 	// LAZERZ Button
-	//lazersButton.mouseDepressedOverButton = false;
-	//lazersButton.m_pos = Vec2(450, 875);
-	//lazersButton.m_dim = Vec2(100, 50);
-	//lazersButton.m_text = "EXIT";
-	//lazersButton.m_texture = sfw::loadTextureMap("./Images/LAZERZ_Button.png");
+	lazersButton.mouseDepressedOverButton = false;
+	lazersButton.m_pos = Vec2(450, 875);
+	lazersButton.m_dim = Vec2(100, 50);
+	lazersButton.m_text = "EXIT";
+	lazersButton.m_texture = sfw::loadTextureMap("./Images/LAZERZ_Button.png");
 
 	// AABB-Plane Button
 	aabbPlaneButton.mouseDepressedOverButton = false;
@@ -115,7 +114,7 @@ void Menu::play()
 
 void Menu::draw()
 {
-	//lazersButton.draw();
+	lazersButton.draw();
 	aabbPlaneButton.draw();
 	aabbButton.draw();
 	nGonButton.draw();
