@@ -171,78 +171,6 @@ reflectionData LAZERZLEVEL::lazerzCollisionDetectionBox(Vec2 lineDirection, Vec2
 	return reflectData;
 }
 
-reflectionData LAZERZLEVEL::lazerzCollisionReflectionLine(reflectionData reflectData)
-{
-	Vec2 reflectVec = reflection(perp(reflectData.objectLineOriginPoint - reflectData.objectLineEndPoint), reflectData.lazerDirection * 2000);
-
-	reflectionData r;
-	return r;
-}
-
-Vec2 LAZERZLEVEL::lazerzCollisionReflection(Vec2 lineDirection, Vec2 linePosition)
-{
-	Vec2 perpDirection = perp(lineDirection);
-	float line_dot_product = dot(lineDirection, linePosition),
-		perp_line_dot_product = dot(perp(lineDirection), linePosition),
-		closestCollPointCloseness = INFINITY;
-	//cout << "lineDirection: " << lineDirection.x << ", " << lineDirection.y << "\n";
-	//cout << "linePosition: " << linePosition.x << ", " << linePosition.y << "\n";
-
-	Vec2 closestCollPoint, closestPointReflection = Vec2(-INFINITY, -INFINITY);
-
-	Box currMirror;
-	for (int ii = 0; ii < m_mirrors_size; ++ii)
-	{
-		currMirror = m_mirrors_transforms[ii].getGlobalTransform() * m_mirrors[ii];
-		float aMin, aMax;
-						 // Find the distance from the AABB to the lazer
-		for (int jj = 0; jj < 4; ++jj)
-		{
-			float dotProduct_0 = dot(perp(lineDirection), currMirror.pointsArr[jj]);
-			float dotProduct_1 = dot(perp(lineDirection), currMirror.pointsArr[(jj + 1) % 4]);
-			aMin = fminf(dotProduct_0, dotProduct_1);
-			aMax = fmaxf(dotProduct_0, dotProduct_1);
-			//cout << "a: " << aMin << ", " << aMax << "\n";
-			//cout << "perp line: " << perp_line_dot_product << "\n";
-			cout << "line: " << line_dot_product << "\n";
-			//cout << "currMirror_index: " << ii << "\n";
-
-			if (aMin <= perp_line_dot_product && aMax >= perp_line_dot_product)
-			{
-				Vec2 reflectVec = reflection(perp(currMirror.pointsArr[jj] - currMirror.pointsArr[(jj + 1) % 4]), lineDirection*2000);
-				//cout << "currMirror: " << perp(currMirror.pointsArr[jj] - currMirror.pointsArr[(jj + 1) % 4]).x << ", " << perp(currMirror.pointsArr[jj] - currMirror.pointsArr[(jj + 1) % 4]).y << "\n";
-				//cout << "reflectVec: " << reflectVec.x << ", " << reflectVec.y << "\n";
-
-				Vec2 velLine = slopeAndConstOfVectorAndVelocity(currMirror.pointsArr[jj], currMirror.pointsArr[(jj + 1) % 4] - currMirror.pointsArr[jj]),
-					planeLine = slopeAndConstOfVectorAndVelocity(linePosition, lineDirection);
-
-				// Find the collision point on the AABB
-				Vec2 collPoint = pointOfCollisionBetweenLines(velLine, planeLine, currMirror.pointsArr[jj].x);
-
-				// Check if the collision point is closest to the laser origin point without going past it
-				float dotProduct_1 = dot(lineDirection + linePosition, collPoint);
-				cout << "dotProduct_1: " << dotProduct_1 << "\n";
-				//cout << "perp_line: " << line_dot_product << "\n";
-				//cout << "closestCollPointCloseness: " << closestCollPointCloseness << "\n";
-				if (dotProduct_1 > line_dot_product && dotProduct_1 < closestCollPointCloseness)
-				{
-					//cout << "new closest point found: " << collPoint.x << ", " << collPoint.y << "\n";
-					closestCollPointCloseness = dotProduct_1;
-					closestCollPoint = collPoint;
-					closestPointReflection = reflectVec;
-				}
-			}
-		}
-	}
-	if (closestPointReflection.x != -INFINITY)
-	{
-		m_bounceOriginAndDirections.push_back(closestCollPoint);
-		m_bounceOriginAndDirections.push_back(closestPointReflection);
-	}
-	cout << "\n\n";
-	return closestPointReflection;
-}
-
 void LAZERZLEVEL::init()
 {
 	m_lazerz_cannon.positionCannon(Vec2(200, 120));
@@ -265,57 +193,32 @@ void LAZERZLEVEL::draw()
 		drawAABB(m_target[ii], RED);
 	}
 
-	Vec2 initEnd = lazerzCollisionDetection(m_lazerz_cannon.lazerzDirection(), m_lazerz_cannon.lazerzOrigin());
-	sfw::drawLine(m_lazerz_cannon.m_head.m_pos.x, m_lazerz_cannon.m_head.m_pos.y, initEnd.x, initEnd.y, YELLOW);
 
-	//if (m_bounceOriginAndDirections.size() > 0)
-	//{
-	//	sfw::drawLine(m_lazerz_cannon.m_head.m_pos.x, m_lazerz_cannon.m_head.m_pos.y, m_bounceOriginAndDirections[0].x, m_bounceOriginAndDirections[0].y, BLUE);
-	//	cout << "m_bounceOriginAndDirections: " << m_bounceOriginAndDirections[0].x << ", " << m_bounceOriginAndDirections[0].y << "\n";
+	//Vec2 initEnd = lazerzCollisionDetection(m_lazerz_cannon.lazerzDirection(), m_lazerz_cannon.lazerzOrigin());
+	//sfw::drawLine(m_lazerz_cannon.lazerzOrigin().x, m_lazerz_cannon.lazerzOrigin().y, initEnd.x, initEnd.y, BLUE);
 
-	//	m_bounceOriginAndDirections.clear();
-	//}
-
-	//cout << "m_bounceOriginAndDirections.size(): " << m_bounceOriginAndDirections.size() << "\n";
-	for (int ii = 0; ii < m_bounceOriginAndDirections.size(); ii+=2)
-	{
-		//cout << m_bounceOriginAndDirections[ii].x << ", " << m_bounceOriginAndDirections[ii].y << "\n";
-		sfw::drawLine(m_bounceOriginAndDirections[ii].x, m_bounceOriginAndDirections[ii].y, 
-			m_bounceOriginAndDirections[ii+1].x + m_bounceOriginAndDirections[ii].x, 
-			m_bounceOriginAndDirections[ii+1].y + m_bounceOriginAndDirections[ii].y, YELLOW);
-		drawCircle(Circle(Vec2(m_bounceOriginAndDirections[ii].x, m_bounceOriginAndDirections[ii].y), 16), YELLOW);
-	}
 	reflectionData p = lazerzCollisionDetectionBox(m_lazerz_cannon.lazerzDirection(), m_lazerz_cannon.lazerzOrigin());
-	drawCircle(Circle(p.lazerEndPoint, 16), BLUE);
-	Vec2 lazerOrigin = p.lazerEndPoint;
+	Vec2 lazerOrigin = m_lazerz_cannon.lazerzOrigin();
 	Vec2 reflectVec = reflection(perp(p.objectLineOriginPoint - p.objectLineEndPoint), p.lazerDirection * 2000);
+	while (p.lazerEndPoint.x != -INFINITY)
+	{
+		sfw::drawLine(lazerOrigin.x, lazerOrigin.y, p.lazerEndPoint.x, p.lazerEndPoint.y, YELLOW);
 
-	cout << "reflectVec: " << reflectVec.x << ", " << reflectVec.y << "\n";
-	cout << "lazerOrigin: " << lazerOrigin.x << ", " << lazerOrigin.y << "\n";
+		lazerOrigin = p.lazerEndPoint;
+		reflectVec = reflection(perp(p.objectLineOriginPoint - p.objectLineEndPoint), p.lazerDirection * 2000);
+		p = lazerzCollisionDetectionBox(reflectVec, lazerOrigin);
+		//drawCircle(Circle(p.lazerEndPoint, 16), BLUE);
+	}
 
-	p = lazerzCollisionDetectionBox(reflectVec, p.lazerEndPoint);
-	drawCircle(Circle(p.lazerEndPoint, 16), BLUE);
+	if (!reflectVec.x)
+		reflectVec = m_lazerz_cannon.lazerzDirection();
 
-	sfw::drawLine(lazerOrigin.x, lazerOrigin.y,
-		p.lazerEndPoint.x, p.lazerEndPoint.y, YELLOW);
+	cout << reflectVec.x << "\n";
 
-	cout << "p.lazerEndPoint: " << p.lazerEndPoint.x << ", " << p.lazerEndPoint.y << "\n";
-	
-	lazerOrigin = p.lazerEndPoint;
-	reflectVec = reflection(perp(p.objectLineOriginPoint - p.objectLineEndPoint), p.lazerDirection * 2000);
-
-	sfw::drawLine(lazerOrigin.x, lazerOrigin.y,
-		reflectVec.x + p.lazerEndPoint.x, reflectVec.y + p.lazerEndPoint.y, YELLOW);
+	Vec2 initEnd = lazerzCollisionDetection(reflectVec, lazerOrigin);
+	sfw::drawLine(lazerOrigin.x, lazerOrigin.y, initEnd.x, initEnd.y, BLUE);
 
 	m_lazerz_cannon.draw();
-
-	//Vec2 collPoint;
-	//if (m_bounceOriginAndDirections.size() == 0)
-	//	collPoint = lazerzCollisionDetection(m_lazerz_cannon.lazerzDirection(), m_lazerz_cannon.lazerzOrigin());
-	//else
-	//	collPoint = lazerzCollisionDetection(m_bounceOriginAndDirections[m_bounceOriginAndDirections.size() - 2],
-	//										  m_bounceOriginAndDirections[m_bounceOriginAndDirections.size() - 1]);
-	//drawCircle(Circle(collPoint, 16), YELLOW);
 
 	m_bounceOriginAndDirections.clear();
 }
@@ -333,16 +236,6 @@ void LAZERZLEVEL::step()
 	else if (sfw::getKey('E'))
 	{
 		m_mirrors_transforms[0].rotateLocalTransform(-0.5);
-	}
-	//while (reflectVal != Vec2(-INFINITY, -INFINITY))
-	{
-		//reflectVal = lazerzCollisionReflection(m_lazerz_cannon.lazerzDirection(), m_lazerz_cannon.lazerzOrigin());
-
-		//if (m_bounceOriginAndDirections.size() != 0)
-		//	reflectVal = lazerzCollisionReflection(m_bounceOriginAndDirections[m_bounceOriginAndDirections.size() - 1],
-		//											m_bounceOriginAndDirections[m_bounceOriginAndDirections.size() - 2]);
-		//else
-		//	reflectVal = lazerzCollisionReflection(m_lazerz_cannon.lazerzDirection(), m_lazerz_cannon.lazerzOrigin());
 	}
 }
 
