@@ -18,6 +18,7 @@ struct reflectionData
 {
 	Vec2 lazerDirection, lazerEndPoint, objectLineOriginPoint, objectLineEndPoint;
 	bool isReflective;
+	float closenessOfCollision;
 };
 
 class LAZERZLEVEL
@@ -35,10 +36,8 @@ class LAZERZLEVEL
 
 public:
 	LAZERZLEVEL();
-	Vec2 lazerzCollisionDetection(Vec2 lineDirection, Vec2 linePosition);
+	reflectionData lazerzCollisionDetection(Vec2 lineDirection, Vec2 linePosition);
 	reflectionData lazerzCollisionDetectionBox(Vec2 lineDirection, Vec2 linePosition);
-	reflectionData lazerzCollisionReflectionLine(reflectionData reflectData);
-	Vec2 lazerzCollisionReflection(Vec2 lineDirection, Vec2 linePosition);
 	void init();
 	void draw();
 	void step();
@@ -65,8 +64,10 @@ LAZERZLEVEL::LAZERZLEVEL()
 	m_target_size = 1;
 }
 
-Vec2 LAZERZLEVEL::lazerzCollisionDetection(Vec2 lineDirection, Vec2 linePosition)
+reflectionData LAZERZLEVEL::lazerzCollisionDetection(Vec2 lineDirection, Vec2 linePosition)
 {
+	reflectionData reflectData;
+
 	float line_dot_product = dot(lineDirection, linePosition),
 		perp_line_dot_product = dot(perp(lineDirection), linePosition),
 		closestCollPointCloseness = INFINITY;
@@ -107,12 +108,15 @@ Vec2 LAZERZLEVEL::lazerzCollisionDetection(Vec2 lineDirection, Vec2 linePosition
 				{
 					closestCollPointCloseness = dotProduct_1;
 					closestCollPoint = collPoint;
+
+					reflectData.lazerEndPoint = collPoint;
+					reflectData.closenessOfCollision = closestCollPointCloseness;
 				}
 			}
 		}
 	}
 
-	return closestCollPoint;
+	return reflectData;
 }
 
 reflectionData LAZERZLEVEL::lazerzCollisionDetectionBox(Vec2 lineDirection, Vec2 linePosition)
@@ -163,6 +167,7 @@ reflectionData LAZERZLEVEL::lazerzCollisionDetectionBox(Vec2 lineDirection, Vec2
 					reflectData.objectLineOriginPoint = lineBegin;
 					reflectData.objectLineEndPoint    = lineEnd;
 					reflectData.lazerDirection = lineDirection;
+					reflectData.closenessOfCollision = closestCollPointCloseness;
 				}
 			}
 		}
@@ -197,26 +202,36 @@ void LAZERZLEVEL::draw()
 	//Vec2 initEnd = lazerzCollisionDetection(m_lazerz_cannon.lazerzDirection(), m_lazerz_cannon.lazerzOrigin());
 	//sfw::drawLine(m_lazerz_cannon.lazerzOrigin().x, m_lazerz_cannon.lazerzOrigin().y, initEnd.x, initEnd.y, BLUE);
 
+	reflectionData hardCollisionData = lazerzCollisionDetection(m_lazerz_cannon.lazerzDirection(), m_lazerz_cannon.lazerzOrigin());
 	reflectionData p = lazerzCollisionDetectionBox(m_lazerz_cannon.lazerzDirection(), m_lazerz_cannon.lazerzOrigin());
 	Vec2 lazerOrigin = m_lazerz_cannon.lazerzOrigin();
 	Vec2 reflectVec = reflection(perp(p.objectLineOriginPoint - p.objectLineEndPoint), p.lazerDirection * 2000);
-	while (p.lazerEndPoint.x != -INFINITY)
+	if(hardCollisionData.closenessOfCollision < p.closenessOfCollision)
+		sfw::drawLine(lazerOrigin.x, lazerOrigin.y, hardCollisionData.lazerEndPoint.x, hardCollisionData.lazerEndPoint.y, BLUE);
+	else
 	{
-		sfw::drawLine(lazerOrigin.x, lazerOrigin.y, p.lazerEndPoint.x, p.lazerEndPoint.y, YELLOW);
+		int limit = 20, ii = 0;
+		while (p.lazerEndPoint.x != -INFINITY && ii < limit)
+		{
 
-		lazerOrigin = p.lazerEndPoint;
-		reflectVec = reflection(perp(p.objectLineOriginPoint - p.objectLineEndPoint), p.lazerDirection * 2000);
-		p = lazerzCollisionDetectionBox(reflectVec, lazerOrigin);
-		//drawCircle(Circle(p.lazerEndPoint, 16), BLUE);
+			sfw::drawLine(lazerOrigin.x, lazerOrigin.y, p.lazerEndPoint.x, p.lazerEndPoint.y, YELLOW);
+
+			lazerOrigin = p.lazerEndPoint;
+			reflectVec = reflection(perp(p.objectLineOriginPoint - p.objectLineEndPoint), p.lazerDirection * 2000);
+			p = lazerzCollisionDetectionBox(reflectVec, lazerOrigin);
+
+			hardCollisionData = lazerzCollisionDetection(reflectVec, lazerOrigin);
+			if (hardCollisionData.closenessOfCollision < p.closenessOfCollision)
+				break;
+
+			++ii;
+		}
 	}
 
 	if (!reflectVec.x)
 		reflectVec = m_lazerz_cannon.lazerzDirection();
 
-	cout << reflectVec.x << "\n";
-
-	Vec2 initEnd = lazerzCollisionDetection(reflectVec, lazerOrigin);
-	sfw::drawLine(lazerOrigin.x, lazerOrigin.y, initEnd.x, initEnd.y, BLUE);
+	sfw::drawLine(lazerOrigin.x, lazerOrigin.y, hardCollisionData.lazerEndPoint.x, hardCollisionData.lazerEndPoint.y, BLUE);
 
 	m_lazerz_cannon.draw();
 
@@ -236,6 +251,14 @@ void LAZERZLEVEL::step()
 	else if (sfw::getKey('E'))
 	{
 		m_mirrors_transforms[0].rotateLocalTransform(-0.5);
+	}
+	if (sfw::getKey('W'))
+	{
+		m_mirrors_transforms[1].rotateLocalTransform(0.5);
+	}
+	else if (sfw::getKey('S'))
+	{
+		m_mirrors_transforms[1].rotateLocalTransform(-0.5);
 	}
 }
 
