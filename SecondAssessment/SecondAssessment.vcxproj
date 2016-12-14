@@ -160,6 +160,7 @@
     <ClInclude Include="LAZERZMENU.h" />
     <ClInclude Include="LAZERZLEVEL.h" />
     <ClInclude Include="LAZERZMAIN.h" />
+    <ClInclude Include="LAZERZTARGET.h" />
     <ClInclude Include="Math_Library\Flops.h" />
     <ClInclude Include="Math_Library\Mat2.h" />
     <ClInclude Include="Math_Library\Mat3.h" />

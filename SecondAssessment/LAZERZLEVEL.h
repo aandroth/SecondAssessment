@@ -8,6 +8,7 @@
 #include "sfwdraw.h"
 #include "Collision.h"
 #include "LAZERZCANNON.h"
+#include "LAZERZTARGET.h"
 #include <vector>
 using std::vector;
 
@@ -24,15 +25,16 @@ struct reflectionData
 class LAZERZLEVEL
 {
 	AABB m_aabbArr[20];
-	AABB m_target[5];
 	Box m_mirrors[20];
 	Transform m_mirrors_transforms[20];
 	bool m_mirror_bounced[20], secondBounce = false;
 	vector<Vec2>  m_bounceOriginAndDirections;
 	LAZERZCANNON m_lazerz_cannon;
+	LAZERZTARGET m_lazerz_target;
+	Button fire_lazerz_button;
 	unsigned m_aabb_arr_size, m_mirrors_size, m_target_size;
-
 	unsigned m_font = sfw::loadTextureMap("./res/tonc_font.png", 16, 6);
+	unsigned int mouse_image = sfw::loadTextureMap("./Images/LAZERZ_Button.png", 16, 6);
 
 public:
 	LAZERZLEVEL();
@@ -45,6 +47,10 @@ public:
 
 LAZERZLEVEL::LAZERZLEVEL()
 {
+	fire_lazerz_button.m_pos = Vec2(850, 900);
+	fire_lazerz_button.m_dim = Vec2(100, 50);
+	fire_lazerz_button.m_texture = ("./Images/LAZERZ_Button.png", 16, 6);
+
 	m_aabbArr[0] = AABB(500, 50, 500, 50);   // Ground
 	m_aabbArr[1] = AABB(0, 550, 150, 450);   // Left
 	m_aabbArr[2] = AABB(950, 450, 50, 350);  // Right
@@ -60,8 +66,7 @@ LAZERZLEVEL::LAZERZLEVEL()
 	m_mirrors_transforms[1].translateByMat3 = translate(530, 500);
 	m_mirrors_size = 2;
 
-	m_target[0] = AABB(525, 525, 20, 20);
-	m_target_size = 1;
+	m_lazerz_target.init();
 }
 
 reflectionData LAZERZLEVEL::lazerzCollisionDetection(Vec2 lineDirection, Vec2 linePosition)
@@ -94,7 +99,6 @@ reflectionData LAZERZLEVEL::lazerzCollisionDetection(Vec2 lineDirection, Vec2 li
 
 			if (aMin <= perp_line_dot_product && aMax >= perp_line_dot_product)
 			{
-
 				Vec2 velLine = slopeAndConstOfVectorAndVelocity(vertArr[jj], vertArr[(jj + 1) % 4] - vertArr[jj]),
 					planeLine = slopeAndConstOfVectorAndVelocity(linePosition, lineDirection);
 
@@ -148,7 +152,6 @@ reflectionData LAZERZLEVEL::lazerzCollisionDetectionBox(Vec2 lineDirection, Vec2
 
 			if (aMin <= perp_line_dot_product && aMax >= perp_line_dot_product)
 			{
-
 				Vec2 velLine = slopeAndConstOfVectorAndVelocity(currMirror.pointsArr[jj], currMirror.pointsArr[(jj + 1) % 4] - currMirror.pointsArr[jj]),
 					planeLine = slopeAndConstOfVectorAndVelocity(linePosition, lineDirection);
 
@@ -183,6 +186,8 @@ void LAZERZLEVEL::init()
 
 void LAZERZLEVEL::draw()
 {
+	fire_lazerz_button.draw();
+
 	for (int ii = 0; ii < m_aabb_arr_size; ++ii)
 	{
 		drawAABB(m_aabbArr[ii], GREEN);
@@ -193,14 +198,7 @@ void LAZERZLEVEL::draw()
 		drawBox(m_mirrors_transforms[ii].getGlobalTransform() * m_mirrors[ii], WHITE);
 	}
 
-	for (int ii = 0; ii < m_target_size; ++ii)
-	{
-		drawAABB(m_target[ii], RED);
-	}
-
-
-	//Vec2 initEnd = lazerzCollisionDetection(m_lazerz_cannon.lazerzDirection(), m_lazerz_cannon.lazerzOrigin());
-	//sfw::drawLine(m_lazerz_cannon.lazerzOrigin().x, m_lazerz_cannon.lazerzOrigin().y, initEnd.x, initEnd.y, BLUE);
+	m_lazerz_target.draw();
 
 	reflectionData hardCollisionData = lazerzCollisionDetection(m_lazerz_cannon.lazerzDirection(), m_lazerz_cannon.lazerzOrigin());
 	reflectionData p = lazerzCollisionDetectionBox(m_lazerz_cannon.lazerzDirection(), m_lazerz_cannon.lazerzOrigin());
@@ -213,7 +211,6 @@ void LAZERZLEVEL::draw()
 		int limit = 20, ii = 0;
 		while (p.lazerEndPoint.x != -INFINITY && ii < limit)
 		{
-
 			sfw::drawLine(lazerOrigin.x, lazerOrigin.y, p.lazerEndPoint.x, p.lazerEndPoint.y, YELLOW);
 
 			lazerOrigin = p.lazerEndPoint;
@@ -236,6 +233,8 @@ void LAZERZLEVEL::draw()
 	m_lazerz_cannon.draw();
 
 	m_bounceOriginAndDirections.clear();
+
+	sfw::drawTexture(mouse_image, sfw::getMouseX(), sfw::getMouseY(), 10, 10);
 }
 
 void LAZERZLEVEL::step()
@@ -260,6 +259,13 @@ void LAZERZLEVEL::step()
 	{
 		m_mirrors_transforms[1].rotateLocalTransform(-0.5);
 	}
+	
+	m_lazerz_target.step();
+	if (fire_lazerz_button.mouseUp())
+	{
+		m_lazerz_target.m_deathSequenceIsActive = true;
+	}
+	fire_lazerz_button.mouseDown();
 }
 
 //LAZERZMENU LAZERZLEVEL::next()
