@@ -37,9 +37,11 @@ class LAZERZLEVEL
 	unsigned int mouse_image = sfw::loadTextureMap("./Images/LAZERZ_Button.png", 16, 6);
 
 public:
-	LAZERZLEVEL();
+	LAZERZLEVEL(); 
+	reflectionData lazerzCollisionDetectionTarget(Vec2 lineDirection, Vec2 linePosition);
 	reflectionData lazerzCollisionDetection(Vec2 lineDirection, Vec2 linePosition);
 	reflectionData lazerzCollisionDetectionBox(Vec2 lineDirection, Vec2 linePosition);
+	int MirrorMouseCollisionDetection();
 	void init();
 	void draw();
 	void step();
@@ -51,11 +53,11 @@ LAZERZLEVEL::LAZERZLEVEL()
 	fire_lazerz_button.m_dim = Vec2(100, 50);
 	fire_lazerz_button.m_texture = ("./Images/LAZERZ_Button.png", 16, 6);
 
-	m_aabbArr[0] = AABB(500, 50, 500, 50);   // Ground
-	m_aabbArr[1] = AABB(0, 550, 150, 450);   // Left
-	m_aabbArr[2] = AABB(950, 450, 50, 350);  // Right
+	m_aabbArr[0] = AABB(500,  50, 500,  50);   // Ground
+	m_aabbArr[1] = AABB(  0, 550, 150, 450);   // Left
+	m_aabbArr[2] = AABB(950, 450,  50, 350);  // Right
 	m_aabbArr[3] = AABB(575, 900, 425, 100); // Roof
-	m_aabbArr[4] = AABB(400, 600, 50, 200);  // Blocker
+	m_aabbArr[4] = AABB(400, 600,  50, 200);  // Blocker
 	m_aabb_arr_size = 5;
 
 	m_mirrors[0] = Box(0, 0, 20, 200);
@@ -63,10 +65,60 @@ LAZERZLEVEL::LAZERZLEVEL()
 	m_mirrors_transforms[0].translateByMat3 = translate(880, 110);
 
 	m_mirrors[1] = Box(0, 0, 20, 200);
-	m_mirrors_transforms[1].translateByMat3 = translate(530, 500);
+	m_mirrors_transforms[1].translateByMat3 = translate(800, 500);
 	m_mirrors_size = 2;
 
 	m_lazerz_target.init();
+}
+
+reflectionData LAZERZLEVEL::lazerzCollisionDetectionTarget(Vec2 lineDirection, Vec2 linePosition)
+{
+	linePosition += normal(lineDirection);
+	float line_dot_product = dot(lineDirection, linePosition),
+		perp_line_dot_product = dot(perp(lineDirection), linePosition),
+		closestCollPointCloseness = INFINITY;
+
+	reflectionData reflectData;
+	reflectData.closenessOfCollision = closestCollPointCloseness;
+	reflectData.lazerEndPoint = Vec2(-INFINITY, -INFINITY);
+	Vec2 closestCollPoint, closestLineOriginPoint, closestLineEndPoint;
+
+	float aMin, aMax;
+
+	for (int jj = 0; jj < 4; ++jj)
+	{
+		float dotProduct_0 = dot(perp(lineDirection), m_lazerz_target.m_body.pointsArr[jj]);
+		float dotProduct_1 = dot(perp(lineDirection), m_lazerz_target.m_body.pointsArr[(jj + 1) % 4]);
+		Vec2 lineBegin = m_lazerz_target.m_body.pointsArr[jj],
+			lineEnd = m_lazerz_target.m_body.pointsArr[(jj + 1) % 4];
+
+		aMin = fminf(dotProduct_0, dotProduct_1);
+		aMax = fmaxf(dotProduct_0, dotProduct_1);
+
+
+		if (aMin <= perp_line_dot_product && aMax >= perp_line_dot_product)
+		{
+			Vec2 velLine = slopeAndConstOfVectorAndVelocity(m_lazerz_target.m_body.pointsArr[jj], m_lazerz_target.m_body.pointsArr[(jj + 1) % 4] - m_lazerz_target.m_body.pointsArr[jj]),
+				planeLine = slopeAndConstOfVectorAndVelocity(linePosition, lineDirection);
+
+			// Find the collision point on the target
+			Vec2 collPoint = pointOfCollisionBetweenLines(velLine, planeLine, m_lazerz_target.m_body.pointsArr[jj].x, linePosition.x);
+
+			// Check if the collision point is closest to the laser without going past it
+			float dotProduct_1 = dot(lineDirection, collPoint);
+
+			if (dotProduct_1 >= line_dot_product && dotProduct_1 < closestCollPointCloseness)
+			{
+				closestCollPointCloseness = dotProduct_1;
+				closestCollPoint = collPoint;
+
+				reflectData.lazerEndPoint = collPoint;
+				reflectData.closenessOfCollision = closestCollPointCloseness;
+			}
+		}
+	}
+
+	return reflectData;
 }
 
 reflectionData LAZERZLEVEL::lazerzCollisionDetection(Vec2 lineDirection, Vec2 linePosition)
@@ -135,7 +187,7 @@ reflectionData LAZERZLEVEL::lazerzCollisionDetectionBox(Vec2 lineDirection, Vec2
 	Vec2 closestCollPoint, closestLineOriginPoint, closestLineEndPoint;
 	Box currMirror;
 
-	for (int ii = 0; ii < m_aabb_arr_size; ++ii)
+	for (int ii = 0; ii < m_mirrors_size; ++ii)
 	{
 		float aMin, aMax;
 		currMirror = m_mirrors_transforms[ii].getGlobalTransform() * m_mirrors[ii];
@@ -155,7 +207,7 @@ reflectionData LAZERZLEVEL::lazerzCollisionDetectionBox(Vec2 lineDirection, Vec2
 				Vec2 velLine = slopeAndConstOfVectorAndVelocity(currMirror.pointsArr[jj], currMirror.pointsArr[(jj + 1) % 4] - currMirror.pointsArr[jj]),
 					planeLine = slopeAndConstOfVectorAndVelocity(linePosition, lineDirection);
 
-				// Find the collision point on the AABB
+				// Find the collision point on the Mirror
 				Vec2 collPoint = pointOfCollisionBetweenLines(velLine, planeLine, currMirror.pointsArr[jj].x, linePosition.x);
 
 				// Check if the collision point is closest to the laser without going past it
@@ -201,11 +253,16 @@ void LAZERZLEVEL::draw()
 	m_lazerz_target.draw();
 
 	reflectionData hardCollisionData = lazerzCollisionDetection(m_lazerz_cannon.lazerzDirection(), m_lazerz_cannon.lazerzOrigin());
+	reflectionData targetCollisionData = lazerzCollisionDetectionTarget(m_lazerz_cannon.lazerzDirection(), m_lazerz_cannon.lazerzOrigin());
 	reflectionData p = lazerzCollisionDetectionBox(m_lazerz_cannon.lazerzDirection(), m_lazerz_cannon.lazerzOrigin());
 	Vec2 lazerOrigin = m_lazerz_cannon.lazerzOrigin();
 	Vec2 reflectVec = reflection(perp(p.objectLineOriginPoint - p.objectLineEndPoint), p.lazerDirection * 2000);
-	if(hardCollisionData.closenessOfCollision < p.closenessOfCollision)
+	if(hardCollisionData.closenessOfCollision < p.closenessOfCollision && hardCollisionData.closenessOfCollision < targetCollisionData.closenessOfCollision)
 		sfw::drawLine(lazerOrigin.x, lazerOrigin.y, hardCollisionData.lazerEndPoint.x, hardCollisionData.lazerEndPoint.y, BLUE);
+	else if (targetCollisionData.closenessOfCollision < p.closenessOfCollision)
+	{
+		sfw::drawLine(lazerOrigin.x, lazerOrigin.y, targetCollisionData.lazerEndPoint.x, targetCollisionData.lazerEndPoint.y, BLUE);
+	}
 	else
 	{
 		int limit = 20, ii = 0;
@@ -218,7 +275,8 @@ void LAZERZLEVEL::draw()
 			p = lazerzCollisionDetectionBox(reflectVec, lazerOrigin);
 
 			hardCollisionData = lazerzCollisionDetection(reflectVec, lazerOrigin);
-			if (hardCollisionData.closenessOfCollision < p.closenessOfCollision)
+			targetCollisionData = lazerzCollisionDetectionTarget(reflectVec, lazerOrigin);
+			if (hardCollisionData.closenessOfCollision < p.closenessOfCollision || targetCollisionData.closenessOfCollision < p.closenessOfCollision)
 				break;
 
 			++ii;
@@ -228,7 +286,10 @@ void LAZERZLEVEL::draw()
 	if (!reflectVec.x)
 		reflectVec = m_lazerz_cannon.lazerzDirection();
 
-	sfw::drawLine(lazerOrigin.x, lazerOrigin.y, hardCollisionData.lazerEndPoint.x, hardCollisionData.lazerEndPoint.y, BLUE);
+	if (hardCollisionData.closenessOfCollision < targetCollisionData.closenessOfCollision)
+		sfw::drawLine(lazerOrigin.x, lazerOrigin.y, hardCollisionData.lazerEndPoint.x, hardCollisionData.lazerEndPoint.y, BLUE);
+	else
+		sfw::drawLine(lazerOrigin.x, lazerOrigin.y, targetCollisionData.lazerEndPoint.x, targetCollisionData.lazerEndPoint.y, BLUE);
 
 	m_lazerz_cannon.draw();
 
@@ -236,6 +297,48 @@ void LAZERZLEVEL::draw()
 
 	sfw::drawTexture(mouse_image, sfw::getMouseX(), sfw::getMouseY(), 10, 10);
 }
+
+int LAZERZLEVEL::MirrorMouseCollisionDetection()
+{
+	float closestCollPointCloseness = INFINITY;
+	Box currMirror;
+	int hitMirrorIndex = -1;
+
+	for (int ii = 0; ii < m_mirrors_size; ++ii)
+	{
+		float aMin, aMax;
+		currMirror = m_mirrors_transforms[ii].getGlobalTransform() * m_mirrors[ii];
+
+		for (int jj = 0; jj < 4; ++jj)
+		{
+			Vec2 lineDirection = currMirror.pointsArr[jj] - currMirror.pointsArr[(jj + 1) % 4];
+			float dotProduct_0 = dot(perp(lineDirection), Vec2(sfw::getMouseX(), sfw::getMouseY())),
+				  dotProduct_1 = dot(perp(lineDirection), currMirror.pointsArr[jj]);
+
+			if (dotProduct_0 <= dotProduct_1)
+			{
+
+				// Check if the collision point is closest to the laser without going past it
+				float dotProduct_1 = dot(lineDirection, collPoint);
+
+				if (dotProduct_1 >= line_dot_product && dotProduct_1 < closestCollPointCloseness)
+				{
+					closestCollPointCloseness = dotProduct_1;
+					closestCollPoint = collPoint;
+
+					reflectData.lazerEndPoint = collPoint;
+					reflectData.objectLineOriginPoint = lineBegin;
+					reflectData.objectLineEndPoint = lineEnd;
+					reflectData.lazerDirection = lineDirection;
+					reflectData.closenessOfCollision = closestCollPointCloseness;
+				}
+			}
+		}
+	}
+
+	return 0; // hitMirrorIndex;
+}
+
 
 void LAZERZLEVEL::step()
 {
