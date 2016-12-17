@@ -44,6 +44,7 @@ struct Box
 {
 	Vec2 pointsArr[4];
 	Vec2 m_pos;
+	unsigned int m_color;
 
 	Box();
 	Box(float centerPos_x, float centerPos_y, float width, float height);

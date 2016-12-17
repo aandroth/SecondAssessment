@@ -27,12 +27,12 @@ class LAZERZLEVEL
 	AABB m_aabbArr[20];
 	Box m_mirrors[20];
 	Transform m_mirrors_transforms[20];
-	bool m_mirror_bounced[20], secondBounce = false;
+	bool m_mirror_bounced[20], targetIsInSight = false;
 	vector<Vec2>  m_bounceOriginAndDirections;
 	LAZERZCANNON m_lazerz_cannon;
 	LAZERZTARGET m_lazerz_target;
 	Button fire_lazerz_button;
-	unsigned m_aabb_arr_size, m_mirrors_size, m_target_size;
+	size_t m_aabb_arr_size, m_mirrors_size, m_mirror_colors[20], indexOfSelectedMirror;
 	unsigned m_font = sfw::loadTextureMap("./res/tonc_font.png", 16, 6);
 	unsigned int mouse_image = sfw::loadTextureMap("./Images/LAZERZ_Button.png", 16, 6);
 
@@ -63,9 +63,11 @@ LAZERZLEVEL::LAZERZLEVEL()
 	m_mirrors[0] = Box(0, 0, 20, 200);
 	m_mirrors_transforms[0].m_facing = -30;
 	m_mirrors_transforms[0].translateByMat3 = translate(880, 110);
+	m_mirror_colors[0] = WHITE;
 
 	m_mirrors[1] = Box(0, 0, 20, 200);
 	m_mirrors_transforms[1].translateByMat3 = translate(800, 500);
+	m_mirror_colors[1] = WHITE;
 	m_mirrors_size = 2;
 
 	m_lazerz_target.init();
@@ -247,7 +249,7 @@ void LAZERZLEVEL::draw()
 
 	for (int ii = 0; ii < m_mirrors_size; ++ii)
 	{
-		drawBox(m_mirrors_transforms[ii].getGlobalTransform() * m_mirrors[ii], WHITE);
+		drawBox(m_mirrors_transforms[ii].getGlobalTransform() * m_mirrors[ii], m_mirror_colors[ii]);
 	}
 
 	m_lazerz_target.draw();
@@ -278,7 +280,6 @@ void LAZERZLEVEL::draw()
 			targetCollisionData = lazerzCollisionDetectionTarget(reflectVec, lazerOrigin);
 			if (hardCollisionData.closenessOfCollision < p.closenessOfCollision || targetCollisionData.closenessOfCollision < p.closenessOfCollision)
 				break;
-
 			++ii;
 		}
 	}
@@ -287,9 +288,15 @@ void LAZERZLEVEL::draw()
 		reflectVec = m_lazerz_cannon.lazerzDirection();
 
 	if (hardCollisionData.closenessOfCollision < targetCollisionData.closenessOfCollision)
+	{
 		sfw::drawLine(lazerOrigin.x, lazerOrigin.y, hardCollisionData.lazerEndPoint.x, hardCollisionData.lazerEndPoint.y, BLUE);
+		targetIsInSight = false;
+	}
 	else
+	{
 		sfw::drawLine(lazerOrigin.x, lazerOrigin.y, targetCollisionData.lazerEndPoint.x, targetCollisionData.lazerEndPoint.y, BLUE);
+		targetIsInSight = true;
+	}
 
 	m_lazerz_cannon.draw();
 
@@ -300,43 +307,35 @@ void LAZERZLEVEL::draw()
 
 int LAZERZLEVEL::MirrorMouseCollisionDetection()
 {
-	float closestCollPointCloseness = INFINITY;
 	Box currMirror;
 	int hitMirrorIndex = -1;
+	Vec2 mousePos = Vec2(sfw::getMouseX(), sfw::getMouseY());
 
 	for (int ii = 0; ii < m_mirrors_size; ++ii)
 	{
-		float aMin, aMax;
 		currMirror = m_mirrors_transforms[ii].getGlobalTransform() * m_mirrors[ii];
 
+		hitMirrorIndex = ii;
 		for (int jj = 0; jj < 4; ++jj)
 		{
 			Vec2 lineDirection = currMirror.pointsArr[jj] - currMirror.pointsArr[(jj + 1) % 4];
-			float dotProduct_0 = dot(perp(lineDirection), Vec2(sfw::getMouseX(), sfw::getMouseY())),
-				  dotProduct_1 = dot(perp(lineDirection), currMirror.pointsArr[jj]);
+			float dotProduct_0 = dot(perp(lineDirection), mousePos),
+				dotProduct_1 = dot(perp(lineDirection), currMirror.pointsArr[jj]);
 
-			if (dotProduct_0 <= dotProduct_1)
+			if (!(dotProduct_0 >= dotProduct_1))
 			{
-
-				// Check if the collision point is closest to the laser without going past it
-				float dotProduct_1 = dot(lineDirection, collPoint);
-
-				if (dotProduct_1 >= line_dot_product && dotProduct_1 < closestCollPointCloseness)
-				{
-					closestCollPointCloseness = dotProduct_1;
-					closestCollPoint = collPoint;
-
-					reflectData.lazerEndPoint = collPoint;
-					reflectData.objectLineOriginPoint = lineBegin;
-					reflectData.objectLineEndPoint = lineEnd;
-					reflectData.lazerDirection = lineDirection;
-					reflectData.closenessOfCollision = closestCollPointCloseness;
-				}
+				hitMirrorIndex = -1;
+				break;
 			}
 		}
-	}
 
-	return 0; // hitMirrorIndex;
+		if (hitMirrorIndex >= 0) 
+		{
+			cout << ii << "\n";
+			return hitMirrorIndex;
+		}
+	}
+	return hitMirrorIndex;
 }
 
 
@@ -346,13 +345,13 @@ void LAZERZLEVEL::step()
 
 	Vec2 reflectVal = Vec2(1, 1);
 
-	if (sfw::getKey('Q'))
+	if (sfw::getKey('Q') && indexOfSelectedMirror >= 0)
 	{
-		m_mirrors_transforms[0].rotateLocalTransform(0.5);
+		m_mirrors_transforms[indexOfSelectedMirror].rotateLocalTransform(0.5);
 	}
-	else if (sfw::getKey('E'))
+	else if (sfw::getKey('E') && indexOfSelectedMirror >= 0)
 	{
-		m_mirrors_transforms[0].rotateLocalTransform(-0.5);
+		m_mirrors_transforms[indexOfSelectedMirror].rotateLocalTransform(-0.5);
 	}
 	if (sfw::getKey('W'))
 	{
@@ -364,11 +363,21 @@ void LAZERZLEVEL::step()
 	}
 	
 	m_lazerz_target.step();
-	if (fire_lazerz_button.mouseUp())
+	if (fire_lazerz_button.mouseUp() && targetIsInSight)
 	{
 		m_lazerz_target.m_deathSequenceIsActive = true;
 	}
 	fire_lazerz_button.mouseDown();
+
+	if (sfw::getMouseButton(0))
+	{
+		for (int ii = 0; ii < m_mirrors_size; ++ii)
+			m_mirror_colors[ii] = WHITE;
+
+		indexOfSelectedMirror = MirrorMouseCollisionDetection();
+		if(indexOfSelectedMirror != -1)
+			m_mirror_colors[indexOfSelectedMirror] = YELLOW;
+	}
 }
 
 //LAZERZMENU LAZERZLEVEL::next()
