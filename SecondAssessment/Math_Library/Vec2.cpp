@@ -1,5 +1,6 @@
 #include "Vec2.h"
 #include <iostream>
+using std::cout;
 
 Vec2::Vec2()
 {

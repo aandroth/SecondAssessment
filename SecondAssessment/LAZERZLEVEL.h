@@ -302,8 +302,8 @@ void LAZERZLEVEL::draw()
 		reflectionData p = lazerzCollisionDetectionBox(m_lazerz_cannon.lazerzDirection(), m_lazerz_cannon.lazerzOrigin(), -1);
 		//cout << "p.lazerEndPoint: " << p.lazerEndPoint.x << ", " << p.lazerEndPoint.y << "\n";
 		Vec2 lazerOrigin = m_lazerz_cannon.lazerzOrigin();
-		Vec2 reflectVec = reflection(perp(p.objectLineOriginPoint - p.objectLineEndPoint), p.lazerDirection * 2000);
-		int limit = 10, ii = 0;
+		Vec2 reflectVec = reflection(perp(p.objectLineOriginPoint - p.objectLineEndPoint), p.lazerDirection * 1000);
+		int limit = 20, ii = 0;
 		if (p.closenessOfCollision < hardCollisionData.closenessOfCollision && 
 			p.closenessOfCollision < targetCollisionData.closenessOfCollision)
 		{
@@ -312,23 +312,16 @@ void LAZERZLEVEL::draw()
 				sfw::drawLine(lazerOrigin.x, lazerOrigin.y, p.lazerEndPoint.x, p.lazerEndPoint.y, YELLOW);
 
 				lazerOrigin = p.lazerEndPoint;
-				reflectVec = reflection(perp(p.objectLineOriginPoint - p.objectLineEndPoint), p.lazerDirection * 2000);
-				//cout << "reflectVec: " << reflectVec.x << ", " << reflectVec.y << "\n";
-				//cout << "p.closenessOfCollision: " << p.closenessOfCollision << "\n";
-				//cout << "p.lazerDirection: " << p.lazerDirection.x << ", " << p.lazerDirection.y << "\n\n";
-				p = lazerzCollisionDetectionBox(reflectVec, p.lazerEndPoint, p.lastMirrorIndex);
-				//cout << "p.lazerEndPoint: " << p.lazerEndPoint.x << ", " << p.lazerEndPoint.y << "\n";
+				reflectVec = reflection(perp(p.objectLineOriginPoint - p.objectLineEndPoint), p.lazerDirection * 1000);
 
-				hardCollisionData = lazerzCollisionDetection(reflectVec, lazerOrigin);
-				targetCollisionData = lazerzCollisionDetectionTarget(reflectVec, lazerOrigin);
+				p = lazerzCollisionDetectionBox(normal(reflectVec), p.lazerEndPoint, p.lastMirrorIndex);
+
+				hardCollisionData = lazerzCollisionDetection(normal(reflectVec), lazerOrigin);
+				targetCollisionData = lazerzCollisionDetectionTarget(normal(reflectVec), lazerOrigin);
 				if (hardCollisionData.closenessOfCollision < p.closenessOfCollision || targetCollisionData.closenessOfCollision < p.closenessOfCollision)
 					break;
 				++ii;
-
-				//cout << "hardCollisionData.lazerEndPoint: " << hardCollisionData.lazerEndPoint.x << ", " << hardCollisionData.lazerEndPoint.y << "\n";
-				//cout << "targetCollisionData.lazerEndPoint: " << targetCollisionData.lazerEndPoint.x << ", " << targetCollisionData.lazerEndPoint.y << "\n\n";
 			}
-			//cout << "\n";
 		}
 		else if (targetCollisionData.closenessOfCollision < hardCollisionData.closenessOfCollision)
 		{
@@ -340,10 +333,6 @@ void LAZERZLEVEL::draw()
 			targetIsInSight = false;
 		}
 
-
-
-		//if (!reflectVec.x)
-		//	reflectVec = m_lazerz_cannon.lazerzDirection();
 		if (ii != limit)
 		{
 			if (hardCollisionData.closenessOfCollision < targetCollisionData.closenessOfCollision)
@@ -361,6 +350,7 @@ void LAZERZLEVEL::draw()
 	else //if (lazerIsFired)
 	{
 		Vec2 unit(normal(currLazerDir)), length(normal(currLazerDir) * 50.0);
+
 		if (magnitude(unit * timePassed) < magnitude(currLazerEnd - currLazerOrigin))
 		{
 			timePassed += sfw::getDeltaTime() * 1000;
@@ -376,7 +366,7 @@ void LAZERZLEVEL::draw()
 				sfw::drawLine(progress.x, progress.y,
 					currLazerEnd.x, currLazerEnd.y, RED);
 
-				Vec2 r = reflection(perp(nextLazer.objectLineOriginPoint - nextLazer.objectLineEndPoint), nextLazer.lazerDirection * 2000);
+				Vec2 r = reflection(perp(nextLazer.objectLineOriginPoint - nextLazer.objectLineEndPoint), nextLazer.lazerDirection * 1000);
 				Vec2 leftOverLineEnd(normal(r) * magnitude((progress + length) - currLazerEnd));
 
 				sfw::drawLine(currLazerEnd.x, currLazerEnd.y,
@@ -390,8 +380,8 @@ void LAZERZLEVEL::draw()
 		{
 			timePassed = 0.0;
 			currLazerOrigin = currLazerEnd;
-			currLazerDir = reflection(perp(nextLazer.objectLineOriginPoint - nextLazer.objectLineEndPoint), nextLazer.lazerDirection * 2000);
-			nextLazer = lazerzCollisionDetectionBox(currLazerDir, currLazerOrigin, nextLazer.lastMirrorIndex);
+			currLazerDir = reflection(perp(nextLazer.objectLineOriginPoint - nextLazer.objectLineEndPoint), nextLazer.lazerDirection * 1000);
+			nextLazer = lazerzCollisionDetectionBox(normal(currLazerDir), currLazerOrigin, nextLazer.lastMirrorIndex);
 			if (nextLazer.lazerEndPoint.x == -INFINITY)
 			{
 				nextLazer = lazerzCollisionDetectionTarget(currLazerDir, currLazerOrigin);
