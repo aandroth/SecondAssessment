@@ -85,7 +85,12 @@ LAZERZLEVEL::LAZERZLEVEL()
 	m_mirrors[2] = Box(0, 0, 20, 200);
 	m_mirrors_transforms[2].m_position = Vec2(840, 350);
 	m_mirror_colors[2] = WHITE;
-	m_mirrors_size = 3;
+
+	m_mirrors[3] = Box(0, 0, 20, 200);
+	m_mirrors_transforms[3].m_facing = -90;
+	m_mirrors_transforms[3].m_position = Vec2(700, 740);
+	m_mirror_colors[3] = WHITE;
+	m_mirrors_size = 4;
 
 	m_lazerz_target.init();
 }
@@ -349,11 +354,11 @@ void LAZERZLEVEL::draw()
 	//////////////////////////////////////////////////////////////
 	else //if (lazerIsFired)
 	{
-		Vec2 unit(normal(currLazerDir)), length(normal(currLazerDir) * 50.0);
+		Vec2 unit(normal(currLazerDir)), length(normal(currLazerDir) * 200.0);
 
 		if (magnitude(unit * timePassed) < magnitude(currLazerEnd - currLazerOrigin))
 		{
-			timePassed += sfw::getDeltaTime() * 1000;
+			timePassed += sfw::getDeltaTime() * 100;
 			progress = currLazerOrigin + (unit * timePassed);
 
 			if (magnitude((progress + length) - currLazerOrigin) < magnitude(currLazerEnd - currLazerOrigin))
@@ -366,11 +371,34 @@ void LAZERZLEVEL::draw()
 				sfw::drawLine(progress.x, progress.y,
 					currLazerEnd.x, currLazerEnd.y, RED);
 
+				float currLength = magnitude(length) - magnitude(nextLazer.lazerEndPoint - progress);
+				Vec2 currOrigin = nextLazer.lazerEndPoint;
 				Vec2 r = reflection(perp(nextLazer.objectLineOriginPoint - nextLazer.objectLineEndPoint), nextLazer.lazerDirection * 1000);
-				Vec2 leftOverLineEnd(normal(r) * magnitude((progress + length) - currLazerEnd));
+				reflectionData reflectData = lazerzCollisionDetectionBox(normal(r), nextLazer.lazerEndPoint, nextLazer.lastMirrorIndex);
+				Vec2 leftOverLineEnd(normal(r) * (magnitude((progress + length) - currLazerEnd)) + currLazerEnd);
+				currLength = magnitude(leftOverLineEnd - currOrigin);
 
-				sfw::drawLine(currLazerEnd.x, currLazerEnd.y,
-					currLazerEnd.x + leftOverLineEnd.x, currLazerEnd.y + leftOverLineEnd.y, RED);
+				// While length is greater than distance to next mirror
+				while (currLength > magnitude(reflectData.lazerEndPoint - currOrigin))
+				{
+					// Draw the lazer to the next mirror
+					sfw::drawLine(currOrigin.x, currOrigin.y,
+						reflectData.lazerEndPoint.x, reflectData.lazerEndPoint.y, RED);
+
+					// subtract from the total length
+					currLength -= magnitude(reflectData.lazerEndPoint - currOrigin);
+
+					// Get the reflection data
+					currOrigin = reflectData.lazerEndPoint;
+					r = reflection(perp(reflectData.objectLineOriginPoint - reflectData.objectLineEndPoint), reflectData.lazerDirection * 1000);
+					reflectData = lazerzCollisionDetectionBox(normal(r), reflectData.lazerEndPoint, reflectData.lastMirrorIndex);
+
+					leftOverLineEnd = Vec2(normal(r) * (currLength)+currOrigin);
+
+				}
+
+				sfw::drawLine(currOrigin.x, currOrigin.y,
+					leftOverLineEnd.x, leftOverLineEnd.y, RED);
 
 				if(lazerIsOnTargetLine)
 					m_lazerz_target.m_deathSequenceIsActive = true;
