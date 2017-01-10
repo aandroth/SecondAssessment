@@ -127,13 +127,6 @@ void LAZERZCANNON::draw()
 
 void LAZERZCANNON::step()
 {
-	//// Back Button
-	//if ( .mouseUp())
-	//{
-	//	state = EXIT_MENU;
-	//}
-	//backButton.mouseDown();
-
 	// AABB Controls
 	if (sfw::getKey('A'))
 	{
@@ -144,8 +137,3 @@ void LAZERZCANNON::step()
 		m_cannon_pivot_transform.rotateLocalTransform(-0.5);
 	}
 }
-
-//MENU_STATE LAZERZCANNON::next()
-//{
-//	return state;
-//}

@@ -123,6 +123,9 @@
     <ClInclude Include="LAZERZTARGET.h">
       <Filter>Header Files\LAZERZGAME</Filter>
     </ClInclude>
+    <ClInclude Include="Art_Spinner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">

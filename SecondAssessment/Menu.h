@@ -7,7 +7,7 @@
 
 class Menu
 {
-	Button lazersButton, aabbPlaneButton, aabbButton, nGonButton, exitButton;
+	Button lazersButton, progArtButton, aabbPlaneButton, aabbButton, nGonButton, exitButton;
 	MENU_STATE state = STAY;
 	int splashFont;
 	float currentTime;
@@ -18,6 +18,7 @@ class Menu
 
 	void buttonPressed_Credits();
 	void buttonPressed_LAZERZ();
+	void buttonPressed_Prog_Art();
 	void buttonPressed_AABB_PLANE();
 	void buttonPressed_AABB();
 	void buttonPressed_NGON();
@@ -39,6 +40,11 @@ void Menu::buttonPressed_Credits()
 void Menu::buttonPressed_LAZERZ()
 {
 	state = PLAY_LAZERZ;
+}
+
+void Menu::buttonPressed_Prog_Art()
+{
+	state = PLAY_ART;
 }
 
 void Menu::buttonPressed_AABB_PLANE()
@@ -64,13 +70,20 @@ void Menu::buttonPressed_Exit()
 void Menu::init()
 {
 	state = STAY;
-	                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+
 	// LAZERZ Button
 	lazersButton.mouseDepressedOverButton = false;
 	lazersButton.m_pos = Vec2(450, 875);
 	lazersButton.m_dim = Vec2(100, 50);
 	lazersButton.m_text = "EXIT";
 	lazersButton.m_texture = sfw::loadTextureMap("./Images/LAZERZ_Button.png");
+
+	// Art Button
+	progArtButton.mouseDepressedOverButton = false;
+	progArtButton.m_pos = Vec2(450, 825);
+	progArtButton.m_dim = Vec2(100, 50);
+	progArtButton.m_text = "EXIT";
+	progArtButton.m_texture = sfw::loadTextureMap("./Images/LAZERZ_Button.png");
 
 	// AABB-Plane Button
 	aabbPlaneButton.mouseDepressedOverButton = false;
@@ -115,6 +128,7 @@ void Menu::play()
 void Menu::draw()
 {
 	lazersButton.draw();
+	progArtButton.draw();
 	aabbPlaneButton.draw();
 	aabbButton.draw();
 	nGonButton.draw();
@@ -136,19 +150,23 @@ void Menu::step()
 	}
 	lazersButton.mouseDown();
 
+	if (progArtButton.mouseUp())
+	{
+		state = PLAY_ART;
+	}
+	progArtButton.mouseDown();
+
 	if (aabbPlaneButton.mouseUp())
 	{
 		state = PLAY_AABB_PLANE;
 	}
 	aabbPlaneButton.mouseDown();
 
-
 	if (aabbButton.mouseUp())
 	{
 		state = PLAY_AABB;
 	}
 	aabbButton.mouseDown();
-
 
 	if (nGonButton.mouseUp())
 	{

@@ -18,6 +18,7 @@
 #include "AABBGame.h"
 #include "AABBPlaneGame.h"
 #include "LAZERZLEVEL.h"
+#include "Art_Spinner.h"
 #include <iostream>
 using std::cout;
 unsigned font;
@@ -43,6 +44,7 @@ int main()
 	Menu menu;
 	menu.init();
 	LAZERZLEVEL *lazerz_level_ptr = nullptr;
+	ArtSpiral *art_area_ptr = nullptr;
 	AABBPlaneGame *aabb_plane_game_ptr = nullptr;
 	AABBGame *aabb_game_ptr = nullptr;
 	NGonGame *ngon_game_ptr = nullptr;
@@ -58,6 +60,7 @@ int main()
 			if (menu.next() == STAY) {}
 			else if (menu.next() == EXIT_MENU) { state = EXIT; }
 			else if (menu.next() == PLAY_LAZERZ) { state = ENTER_LAZERZ_GAMEPLAY; }
+			else if (menu.next() == PLAY_ART) { state = ENTER_ART_GAMEPLAY; }
 			else if (menu.next() == PLAY_AABB_PLANE) { state = ENTER_AABB_PLANE_GAMEPLAY; }
 			else if (menu.next() == PLAY_AABB) { state = ENTER_AABB_GAMEPLAY; }
 			else if (menu.next() == PLAY_NGON) { state = ENTER_NGON_GAMEPLAY; }
@@ -85,6 +88,17 @@ int main()
 		case LAZERZ_GAMEPLAY:
 			lazerz_level_ptr->step();
 			lazerz_level_ptr->draw();
+			//if (lazerz_level_ptr->next() == STAY) {}
+			//else { state = MENU; delete aabb_plane_game_ptr; aabb_plane_game_ptr = nullptr; menu.init(); }
+			break;
+		case ENTER_ART_GAMEPLAY:
+			art_area_ptr = new ArtSpiral;
+			art_area_ptr->init();
+			state = ART_GAMEPLAY;
+			break;
+		case ART_GAMEPLAY:
+			art_area_ptr->step();
+			art_area_ptr->draw();
 			//if (lazerz_level_ptr->next() == STAY) {}
 			//else { state = MENU; delete aabb_plane_game_ptr; aabb_plane_game_ptr = nullptr; menu.init(); }
 			break;
